@@ -1,0 +1,6 @@
+.venv/
+.crewai-storage/
+Library/
+__pycache__/
+*.pyc
+.env

@@ -11,6 +11,29 @@
 		0B7D05D32FAC22DF00791CC9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D05D22FAC22DF00791CC9 /* ContentView.swift */; };
 		0B7D05D52FAC22E100791CC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B7D05D42FAC22E100791CC9 /* Assets.xcassets */; };
 		0B7D05D82FAC22E100791CC9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B7D05D72FAC22E100791CC9 /* Preview Assets.xcassets */; };
+		0B7D06012FAC300000791CC9 /* ActiveEnergyCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06002FAC300000791CC9 /* ActiveEnergyCard.swift */; };
+		0B7D06032FAC300000791CC9 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06022FAC300000791CC9 /* AppSettings.swift */; };
+		0B7D06052FAC300000791CC9 /* LaunchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06042FAC300000791CC9 /* LaunchPage.swift */; };
+		0B7D06072FAC300000791CC9 /* CalorieGoalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06062FAC300000791CC9 /* CalorieGoalCard.swift */; };
+		0B7D06092FAC300000791CC9 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06082FAC300000791CC9 /* CameraPreview.swift */; };
+		0B7D060B2FAC300000791CC9 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D060A2FAC300000791CC9 /* CameraViewModel.swift */; };
+		0B7D060D2FAC300000791CC9 /* FitnessTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D060C2FAC300000791CC9 /* FitnessTab.swift */; };
+		0B7D060F2FAC300000791CC9 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D060E2FAC300000791CC9 /* MainPage.swift */; };
+		0B7D06112FAC300000791CC9 /* FormCoachPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06102FAC300000791CC9 /* FormCoachPage.swift */; };
+		0B7D06132FAC300000791CC9 /* FormFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06122FAC300000791CC9 /* FormFeedback.swift */; };
+		0B7D06152FAC300000791CC9 /* FormFeedbackAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06142FAC300000791CC9 /* FormFeedbackAnalyzer.swift */; };
+		0B7D06172FAC300000791CC9 /* FormFeedbackPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06162FAC300000791CC9 /* FormFeedbackPanel.swift */; };
+		0B7D06192FAC300000791CC9 /* HealthAuthorizationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06182FAC300000791CC9 /* HealthAuthorizationStatus.swift */; };
+		0B7D061B2FAC300000791CC9 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D061A2FAC300000791CC9 /* HealthKitManager.swift */; };
+		0B7D061D2FAC300000791CC9 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D061C2FAC300000791CC9 /* InsightCard.swift */; };
+		0B7D061F2FAC300000791CC9 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D061E2FAC300000791CC9 /* PreviewView.swift */; };
+		0B7D06212FAC300000791CC9 /* ReadinessItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06202FAC300000791CC9 /* ReadinessItem.swift */; };
+		0B7D06232FAC300000791CC9 /* ReadinessRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06222FAC300000791CC9 /* ReadinessRow.swift */; };
+		0B7D06252FAC300000791CC9 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06242FAC300000791CC9 /* RecommendationEngine.swift */; };
+		0B7D06272FAC300000791CC9 /* CoachPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06262FAC300000791CC9 /* CoachPage.swift */; };
+		0B7D06292FAC300000791CC9 /* WorkoutFocus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06282FAC300000791CC9 /* WorkoutFocus.swift */; };
+		0B7D062B2FAC300000791CC9 /* WorkoutRecommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D062A2FAC300000791CC9 /* WorkoutRecommendation.swift */; };
+		0B7D062D2FAC300000791CC9 /* WorkoutRecommendationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D062C2FAC300000791CC9 /* WorkoutRecommendationRow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +42,30 @@
 		0B7D05D22FAC22DF00791CC9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0B7D05D42FAC22E100791CC9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0B7D05D72FAC22E100791CC9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0B7D06002FAC300000791CC9 /* ActiveEnergyCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/ActiveEnergyCard.swift; sourceTree = "<group>"; };
+		0B7D06022FAC300000791CC9 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AppSettings.swift; sourceTree = "<group>"; };
+		0B7D06042FAC300000791CC9 /* LaunchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/Launch/LaunchPage.swift; sourceTree = "<group>"; };
+		0B7D06062FAC300000791CC9 /* CalorieGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/CalorieGoalCard.swift; sourceTree = "<group>"; };
+		0B7D06082FAC300000791CC9 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera/CameraPreview.swift; sourceTree = "<group>"; };
+		0B7D060A2FAC300000791CC9 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera/CameraViewModel.swift; sourceTree = "<group>"; };
+		0B7D060C2FAC300000791CC9 /* FitnessTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/FitnessTab.swift; sourceTree = "<group>"; };
+		0B7D060E2FAC300000791CC9 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/Main/MainPage.swift; sourceTree = "<group>"; };
+		0B7D06102FAC300000791CC9 /* FormCoachPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/Form/FormCoachPage.swift; sourceTree = "<group>"; };
+		0B7D06122FAC300000791CC9 /* FormFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/FormFeedback.swift; sourceTree = "<group>"; };
+		0B7D06142FAC300000791CC9 /* FormFeedbackAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera/FormFeedbackAnalyzer.swift; sourceTree = "<group>"; };
+		0B7D06162FAC300000791CC9 /* FormFeedbackPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/FormFeedbackPanel.swift; sourceTree = "<group>"; };
+		0B7D06182FAC300000791CC9 /* HealthAuthorizationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/HealthAuthorizationStatus.swift; sourceTree = "<group>"; };
+		0B7D061A2FAC300000791CC9 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Health/HealthKitManager.swift; sourceTree = "<group>"; };
+		0B7D061C2FAC300000791CC9 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/InsightCard.swift; sourceTree = "<group>"; };
+		0B7D061E2FAC300000791CC9 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera/PreviewView.swift; sourceTree = "<group>"; };
+		0B7D06202FAC300000791CC9 /* ReadinessItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ReadinessItem.swift; sourceTree = "<group>"; };
+		0B7D06222FAC300000791CC9 /* ReadinessRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/ReadinessRow.swift; sourceTree = "<group>"; };
+		0B7D06242FAC300000791CC9 /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Recommendations/RecommendationEngine.swift; sourceTree = "<group>"; };
+		0B7D06262FAC300000791CC9 /* CoachPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/Coach/CoachPage.swift; sourceTree = "<group>"; };
+		0B7D06282FAC300000791CC9 /* WorkoutFocus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/WorkoutFocus.swift; sourceTree = "<group>"; };
+		0B7D062A2FAC300000791CC9 /* WorkoutRecommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/WorkoutRecommendation.swift; sourceTree = "<group>"; };
+		0B7D062C2FAC300000791CC9 /* WorkoutRecommendationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/WorkoutRecommendationRow.swift; sourceTree = "<group>"; };
+		0B7D062E2FAC300000791CC9 /* Fitness.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Fitness.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +100,30 @@
 			children = (
 				0B7D05D02FAC22DF00791CC9 /* FitnessApp.swift */,
 				0B7D05D22FAC22DF00791CC9 /* ContentView.swift */,
+				0B7D060C2FAC300000791CC9 /* FitnessTab.swift */,
+				0B7D06022FAC300000791CC9 /* AppSettings.swift */,
+				0B7D06282FAC300000791CC9 /* WorkoutFocus.swift */,
+				0B7D062A2FAC300000791CC9 /* WorkoutRecommendation.swift */,
+				0B7D06242FAC300000791CC9 /* RecommendationEngine.swift */,
+				0B7D061A2FAC300000791CC9 /* HealthKitManager.swift */,
+				0B7D06182FAC300000791CC9 /* HealthAuthorizationStatus.swift */,
+				0B7D06122FAC300000791CC9 /* FormFeedback.swift */,
+				0B7D06142FAC300000791CC9 /* FormFeedbackAnalyzer.swift */,
+				0B7D060A2FAC300000791CC9 /* CameraViewModel.swift */,
+				0B7D06082FAC300000791CC9 /* CameraPreview.swift */,
+				0B7D061E2FAC300000791CC9 /* PreviewView.swift */,
+				0B7D060E2FAC300000791CC9 /* MainPage.swift */,
+				0B7D06002FAC300000791CC9 /* ActiveEnergyCard.swift */,
+				0B7D06062FAC300000791CC9 /* CalorieGoalCard.swift */,
+				0B7D061C2FAC300000791CC9 /* InsightCard.swift */,
+				0B7D06262FAC300000791CC9 /* CoachPage.swift */,
+				0B7D062C2FAC300000791CC9 /* WorkoutRecommendationRow.swift */,
+				0B7D06102FAC300000791CC9 /* FormCoachPage.swift */,
+				0B7D06162FAC300000791CC9 /* FormFeedbackPanel.swift */,
+				0B7D06042FAC300000791CC9 /* LaunchPage.swift */,
+				0B7D06202FAC300000791CC9 /* ReadinessItem.swift */,
+				0B7D06222FAC300000791CC9 /* ReadinessRow.swift */,
+				0B7D062E2FAC300000791CC9 /* Fitness.entitlements */,
 				0B7D05D42FAC22E100791CC9 /* Assets.xcassets */,
 				0B7D05D62FAC22E100791CC9 /* Preview Content */,
 			);
@@ -99,6 +170,11 @@
 				TargetAttributes = {
 					0B7D05CC2FAC22DF00791CC9 = {
 						CreatedOnToolsVersion = 14.3.1;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -137,8 +213,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B7D06152FAC300000791CC9 /* FormFeedbackAnalyzer.swift in Sources */,
+				0B7D06012FAC300000791CC9 /* ActiveEnergyCard.swift in Sources */,
+				0B7D061D2FAC300000791CC9 /* InsightCard.swift in Sources */,
+				0B7D062B2FAC300000791CC9 /* WorkoutRecommendation.swift in Sources */,
+				0B7D06072FAC300000791CC9 /* CalorieGoalCard.swift in Sources */,
+				0B7D06172FAC300000791CC9 /* FormFeedbackPanel.swift in Sources */,
+				0B7D06092FAC300000791CC9 /* CameraPreview.swift in Sources */,
+				0B7D06252FAC300000791CC9 /* RecommendationEngine.swift in Sources */,
 				0B7D05D32FAC22DF00791CC9 /* ContentView.swift in Sources */,
+				0B7D060B2FAC300000791CC9 /* CameraViewModel.swift in Sources */,
+				0B7D06032FAC300000791CC9 /* AppSettings.swift in Sources */,
+				0B7D061F2FAC300000791CC9 /* PreviewView.swift in Sources */,
+				0B7D060D2FAC300000791CC9 /* FitnessTab.swift in Sources */,
+				0B7D06132FAC300000791CC9 /* FormFeedback.swift in Sources */,
+				0B7D06272FAC300000791CC9 /* CoachPage.swift in Sources */,
+				0B7D06192FAC300000791CC9 /* HealthAuthorizationStatus.swift in Sources */,
+				0B7D06212FAC300000791CC9 /* ReadinessItem.swift in Sources */,
 				0B7D05D12FAC22DF00791CC9 /* FitnessApp.swift in Sources */,
+				0B7D06112FAC300000791CC9 /* FormCoachPage.swift in Sources */,
+				0B7D060F2FAC300000791CC9 /* MainPage.swift in Sources */,
+				0B7D062D2FAC300000791CC9 /* WorkoutRecommendationRow.swift in Sources */,
+				0B7D06292FAC300000791CC9 /* WorkoutFocus.swift in Sources */,
+				0B7D061B2FAC300000791CC9 /* HealthKitManager.swift in Sources */,
+				0B7D06052FAC300000791CC9 /* LaunchPage.swift in Sources */,
+				0B7D06232FAC300000791CC9 /* ReadinessRow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,10 +364,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = Fitness/Fitness.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Fitness/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Fitness Coach uses the camera for on-device exercise form feedback.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Fitness Coach reads active energy from Apple Health to show daily calorie progress.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Fitness Coach may write workout data in future versions after you allow it.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -293,10 +396,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = Fitness/Fitness.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Fitness/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Fitness Coach uses the camera for on-device exercise form feedback.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Fitness Coach reads active energy from Apple Health to show daily calorie progress.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Fitness Coach may write workout data in future versions after you allow it.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
