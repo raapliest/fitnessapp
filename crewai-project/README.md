@@ -1,30 +1,21 @@
-# CrewAI SwiftUI Architecture Team
+# CrewAI Beginner Gym Helper Team
 
-This project simulates a five-agent software engineering team that designs the
-architecture for a small iOS SwiftUI app.
+This project runs a beginner gym helper crew for the Fitness Coach iOS app.
 
-## Folder Structure
-
-```text
-crewai-project/
-├── agents.py
-├── tasks.py
-├── crew.py
-├── crewAI.py
-├── .gitignore
-├── requirements.txt
-├── README.md
-└── skills/
-    └── swiftui-pro/
-```
+Camera QA is intentionally skipped for now. The crew focuses on HealthKit,
+beginner-friendly SwiftUI guidance, and QA readiness.
 
 ## Agents
 
-- SwiftUI Expert Agent: designs the SwiftUI UI architecture.
-- Swift Concurrency Expert Agent: designs async/await and background workflows.
-- Core Data Expert Agent: designs persistence and schema boundaries.
-- Swift Testing Expert Agent: creates the test strategy.
-- Code Reviewer Agent: reviews the full plan and suggests improvements.
+- Beginner Gym Coach Agent: asks beginner-focused training questions through
+  the terminal and turns free-form answers into simple, safe gym guidance.
+- HealthKit Agent: reviews HealthKit privacy, authorization, active-energy reads,
+  unavailable states, and whether the HealthKit signals support beginner advice.
+- SwiftUI Agent: reviews Today, Coach, Launch, onboarding/disclaimer, state
+  ownership, accessibility, layout risks, and whether the UI feels clear to a
+  new gym user.
+- QA Agent: creates terminal checks, simulator expectations, iPhone HealthKit
+  test steps, regression checks, and release blockers.
 
 ## Setup
 
@@ -47,10 +38,12 @@ crewai-project/
    pip install -r requirements.txt
    ```
 
-4. Set your LLM API key. For example, with OpenAI:
+4. Set an LLM API key. Groq is used first if available; otherwise OpenAI is used.
 
    ```bash
-   export OPENAI_API_KEY="your-api-key-here"
+   export GROQ_API_KEY="your-groq-key"
+   # or
+   export OPENAI_API_KEY="your-openai-key"
    ```
 
 5. Run the crew:
@@ -59,15 +52,23 @@ crewai-project/
    python crew.py
    ```
 
-## What It Produces
+   By default, the script asks a few product-intake questions before the agents
+   start. To skip the questions and use default context:
+
+   ```bash
+   python crew.py --no-intake
+   ```
+
+## Workflow
 
 The workflow runs sequentially:
 
-1. SwiftUI app architecture design
-2. Async data flow design
-3. Core Data schema design
-4. Unit test plan
-5. Final review and improvement checklist
+0. Beginner gym intake questions in terminal
+1. Beginner Gym Coach guidance
+2. HealthKit review
+3. SwiftUI review
+4. QA report
 
-The final terminal output is a reviewed architecture plan for the sample app,
-FocusLog.
+The final terminal output is a beginner helper report with simple training
+guidance, HealthKit checks, SwiftUI issues, terminal commands, real-device
+iPhone steps, and release blockers.

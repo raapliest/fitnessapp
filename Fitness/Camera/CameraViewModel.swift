@@ -5,6 +5,12 @@ import Foundation
 final class CameraViewModel: NSObject, ObservableObject {
     @Published private(set) var feedback = FormFeedback.waiting
     @Published private(set) var cameraStatus = "Camera is not running."
+    @Published var selectedMovement: TrainerMovement = .squat {
+        didSet {
+            analyzer.setMovement(selectedMovement)
+            feedback = .waiting
+        }
+    }
 
     let session = AVCaptureSession()
 

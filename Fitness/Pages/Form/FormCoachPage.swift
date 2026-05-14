@@ -5,16 +5,25 @@ struct FormCoachPage: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                CameraPreview(session: camera.session)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 420)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: 16) {
+                        Picker("Movement", selection: $camera.selectedMovement) {
+                            ForEach(TrainerMovement.allCases) { movement in
+                                Text(movement.title).tag(movement)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        CameraPreview(session: camera.session)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: min(proxy.size.height * 0.48, 420))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                        FormFeedbackPanel(feedback: camera.feedback, cameraStatus: camera.cameraStatus)
+                    }
                     .padding()
-
-                FormFeedbackPanel(feedback: camera.feedback, cameraStatus: camera.cameraStatus)
-
-                Spacer(minLength: 0)
+                }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Form Feedback")

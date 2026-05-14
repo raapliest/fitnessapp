@@ -1,10 +1,29 @@
 import AVFoundation
+import CoreGraphics
 import CoreML
 import Foundation
 import Vision
 
 final class FormFeedbackAnalyzer {
     private let bodyPoseRequest = VNDetectHumanBodyPoseRequest()
+    private let trainerScorer: TrainerMovementScoring
+    private var selectedMovement: TrainerMovement = .squat
+    private var repCount = 0
+    private var wasInRepBottom = false
+
+    init(trainerScorer: TrainerMovementScoring = HeuristicTrainerMovementScorer()) {
+        self.trainerScorer = trainerScorer
+    }
+
+    func setMovement(_ movement: TrainerMovement) {
+        guard selectedMovement != movement else {
+            return
+        }
+
+        selectedMovement = movement
+        repCount = 0
+        wasInRepBottom = false
+    }
 
     func analyze(sampleBuffer: CMSampleBuffer) -> FormFeedback {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
@@ -26,7 +45,8 @@ final class FormFeedbackAnalyzer {
                 headline: "Pose unavailable",
                 detail: "Vision could not read this frame. Improve lighting and keep moving slowly.",
                 confidence: 0,
-                isReadyForModelUpgrade: false
+                isReadyForModelUpgrade: false,
+                trainerScore: .waiting
             )
         }
     }
@@ -44,27 +64,99 @@ final class FormFeedbackAnalyzer {
                 headline: "Step back a little",
                 detail: "Your lower body is partly out of frame. Full-body visibility improves squat and lunge feedback.",
                 confidence: confidence,
-                isReadyForModelUpgrade: false
+                isReadyForModelUpgrade: false,
+                trainerScore: .waiting
             )
         }
 
-        return FormFeedback(
-            headline: "Good tracking",
-            detail: "Vision is detecting your joints. Next path: route these pose vectors into a Core ML classifier for rep counting and form scoring.",
-            confidence: confidence,
-            isReadyForModelUpgrade: true
+        updateRepCount(with: points)
+        let trainerScore = trainerScorer.score(
+            movement: selectedMovement,
+            points: points,
+            repCount: repCount
         )
+
+        return FormFeedback(
+            headline: "\(selectedMovement.title) score \(Int(trainerScore.score * 100))",
+            detail: trainerScore.cue,
+            confidence: confidence,
+            isReadyForModelUpgrade: true,
+            trainerScore: trainerScore
+        )
+    }
+
+    private func updateRepCount(with points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]) {
+        guard selectedMovement != .plank else {
+            return
+        }
+
+        let kneeDepth = average([
+            normalizedLegDepth(hip: .leftHip, knee: .leftKnee, ankle: .leftAnkle, points: points),
+            normalizedLegDepth(hip: .rightHip, knee: .rightKnee, ankle: .rightAnkle, points: points)
+        ])
+
+        if kneeDepth > 0.72 {
+            wasInRepBottom = true
+        } else if kneeDepth < 0.55 && wasInRepBottom {
+            repCount += 1
+            wasInRepBottom = false
+        }
+    }
+
+    private func normalizedLegDepth(
+        hip: VNHumanBodyPoseObservation.JointName,
+        knee: VNHumanBodyPoseObservation.JointName,
+        ankle: VNHumanBodyPoseObservation.JointName,
+        points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]
+    ) -> Double {
+        guard
+            let hipPoint = point(hip, in: points),
+            let kneePoint = point(knee, in: points),
+            let anklePoint = point(ankle, in: points)
+        else {
+            return 0
+        }
+
+        let upperLeg = distance(hipPoint.location, kneePoint.location)
+        let lowerLeg = distance(kneePoint.location, anklePoint.location)
+        guard lowerLeg > 0 else {
+            return 0
+        }
+
+        return min(max(upperLeg / lowerLeg, 0), 1)
+    }
+
+    private func average(_ values: [Double]) -> Double {
+        let validValues = values.filter { $0 > 0 }
+        guard !validValues.isEmpty else {
+            return 0
+        }
+
+        return validValues.reduce(0, +) / Double(validValues.count)
+    }
+
+    private func distance(_ first: CGPoint, _ second: CGPoint) -> Double {
+        let x = Double(first.x - second.x)
+        let y = Double(first.y - second.y)
+        return sqrt((x * x) + (y * y))
     }
 
     private func hasVisiblePoint(
         _ name: VNHumanBodyPoseObservation.JointName,
         in points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]
     ) -> Bool {
-        guard let point = points[name] else {
-            return false
+        point(name, in: points) != nil
+    }
+
+    private func point(
+        _ name: VNHumanBodyPoseObservation.JointName,
+        in points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]
+    ) -> VNRecognizedPoint? {
+        guard let point = points[name], point.confidence > 0.35 else {
+            return nil
         }
 
-        return point.confidence > 0.35
+        return point
     }
 }
 

@@ -38,6 +38,20 @@ struct ContentView: View {
         .task {
             await healthKit.requestAuthorization()
         }
+        .fullScreenCover(
+            isPresented: Binding(
+                get: { !settings.hasAcceptedMedicalDisclaimer },
+                set: { isPresented in
+                    if !isPresented {
+                        settings.hasAcceptedMedicalDisclaimer = true
+                    }
+                }
+            )
+        ) {
+            MedicalDisclaimerView {
+                settings.hasAcceptedMedicalDisclaimer = true
+            }
+        }
     }
 }
 

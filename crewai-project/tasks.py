@@ -1,134 +1,143 @@
-"""Task definitions for the SwiftUI architecture design workflow."""
+"""Task definitions for the beginner gym helper workflow."""
 
 from crewai import Task
 
 
 APP_BRIEF = """
-Design a small SwiftUI app called FocusLog.
+Shape an iOS SwiftUI app called Fitness Coach into a beginner gym helper.
 
-FocusLog lets users record short focus sessions, add a note after each session,
-tag sessions by category, and review recent productivity patterns. The team is
-not writing the Swift app yet; this CrewAI project should produce the app
-architecture plan that a Swift team could implement next.
+Current product scope:
+- Today screen shows active calories, daily calorie goal, and coaching notes.
+- HealthKit reads active energy burned from Apple Health.
+- Coach screen recommends workouts based on active calories, calorie goal, and focus.
+- Form screen exists, but camera QA is intentionally out of scope for this crew run.
+- Launch screen tracks readiness items such as HealthKit privacy, disclaimer, and QA.
+- The app includes a medical disclaimer gate before coaching guidance.
+
+The product direction is not a generic product review tool. It should help a
+new gym user understand what to do today, how hard to go, and how to stay
+consistent using simple HealthKit-aware guidance.
 """
 
 
-def create_architecture_task(agent) -> Task:
-    """Plan the SwiftUI app architecture and screen structure."""
+DEFAULT_INTAKE_CONTEXT = """
+No custom intake was provided. Assume the user is a beginner who wants to go to
+the gym consistently, understand daily active calories, and receive simple,
+safe workout suggestions.
+"""
+
+
+def create_beginner_guidance_task(agent, intake_context: str) -> Task:
+    """Turn beginner answers into gym helper advice."""
     return Task(
         description=(
             f"{APP_BRIEF}\n\n"
-            "Create the SwiftUI architecture design. Include the main features, "
-            "screen hierarchy, view model responsibilities, state ownership, "
-            "navigation approach, and accessibility notes. Keep the plan small "
-            "enough for a beginner iOS project but realistic enough for a real "
-            "engineering team."
+            f"Answers from the beginner gym guidance conversation:\n"
+            f"{intake_context}\n\n"
+            "Act as the Beginner Gym Coach Agent. First summarize the user's "
+            "goal, experience level, constraints, confidence blockers, and likely "
+            "next step. Then suggest simple app guidance for today's workout, "
+            "weekly consistency, calorie-progress interpretation, coaching tone, "
+            "and safety boundaries. Keep suggestions beginner-friendly and avoid "
+            "medical advice. Do not include camera QA because camera is out of "
+            "scope for this run."
         ),
         expected_output=(
-            "A concise architecture document with feature modules, screen flow, "
-            "SwiftUI state strategy, navigation plan, and UI best practices."
+            "A beginner gym helper brief with the inferred user profile, simple "
+            "training guidance, app feature suggestions, coaching guardrails, "
+            "HealthKit priorities, and open follow-up questions."
         ),
         agent=agent,
     )
 
 
-def create_async_data_flow_task(agent, context_tasks) -> Task:
-    """Plan async workflows and background work."""
+def create_healthkit_task(agent, context_tasks) -> Task:
+    """Review HealthKit behavior and privacy readiness."""
     return Task(
         description=(
-            "Using the SwiftUI architecture plan, design the async data flow for "
-            "FocusLog. Cover async loading, saving sessions, refreshing summary "
-            "data, task cancellation, MainActor updates, and background work. "
-            "Explain where async/await should be used and where it should be "
-            "avoided."
+            f"{APP_BRIEF}\n\n"
+            "Use the Beginner Gym Coach brief as product context. "
+            "Review the HealthKit side of the app. Focus on entitlement and "
+            "purpose-string readiness, authorization handling, unavailable or "
+            "denied states, active-energy query behavior, user privacy wording, "
+            "and what must be tested on a physical iPhone. Do not include camera "
+            "testing."
         ),
         expected_output=(
-            "An async data flow plan with example responsibilities for services, "
-            "view models, task cancellation, and main-thread UI updates."
+            "A HealthKit review with pass/fail observations, risks, recommended "
+            "code or copy improvements, and a real-device HealthKit checklist."
         ),
         agent=agent,
         context=context_tasks,
     )
 
 
-def create_core_data_task(agent, context_tasks) -> Task:
-    """Plan Core Data entities and persistence boundaries."""
+def create_swiftui_task(agent, context_tasks) -> Task:
+    """Review SwiftUI screens and user-facing guidance."""
     return Task(
         description=(
-            "Using the app architecture and async data flow, design the Core Data "
-            "schema for FocusLog. Include entities, attributes, relationships, "
-            "delete rules, fetch requests, background context usage, and a simple "
-            "migration strategy."
+            "Using the Beginner Gym Coach brief and HealthKit review, inspect "
+            "the SwiftUI app experience. "
+            "Cover Today, Coach, Launch, and the medical disclaimer flow. Check "
+            "state ownership, layout risks, accessibility, navigation, empty or "
+            "permission-denied states, and whether coaching guidance is clear "
+            "without sounding like medical advice. Keep camera-specific review "
+            "out of scope."
         ),
         expected_output=(
-            "A Core Data design document with entities, fields, relationships, "
-            "fetch patterns, persistence service boundaries, and migration notes."
+            "A SwiftUI UX and architecture review with concrete issues, suggested "
+            "fixes, and launch-readiness notes."
         ),
         agent=agent,
         context=context_tasks,
     )
 
 
-def create_unit_test_task(agent, context_tasks) -> Task:
-    """Create a testing strategy for the proposed architecture."""
+def create_qa_task(agent, context_tasks) -> Task:
+    """Create terminal and real-device QA instructions."""
     return Task(
         description=(
-            "Using the architecture, async flow, and Core Data schema, write a "
-            "unit test plan for FocusLog. Include what to test in view models, "
-            "services, persistence, async behavior, and review logic. Include "
-            "example test names and a recommended test folder structure."
+            "Using the Beginner Gym Coach brief, HealthKit review, and SwiftUI "
+            "review, create a QA plan for the Fitness Coach app. Include terminal "
+            "commands the developer can run from the repository, expected results, "
+            "simulator limitations, iPhone HealthKit test steps, regression checks "
+            "for onboarding/disclaimer, and release blockers. Do not include "
+            "camera QA in this run."
         ),
         expected_output=(
-            "A beginner-friendly Swift test plan with test categories, sample "
-            "test names, fake dependencies, and coverage priorities."
+            "A concise QA report with terminal checks, real-device HealthKit "
+            "steps, expected outcomes, and a prioritized release-blocker list."
         ),
         agent=agent,
         context=context_tasks,
     )
 
 
-def create_final_review_task(agent, context_tasks) -> Task:
-    """Review the whole plan and suggest improvements."""
-    return Task(
-        description=(
-            "Review all previous outputs as if this were a real software design "
-            "review. Find architecture risks, missing data concerns, concurrency "
-            "mistakes, testing gaps, and opportunities to simplify. Finish with "
-            "a prioritized improvement checklist."
-        ),
-        expected_output=(
-            "A final review report with findings, concrete fixes, and a "
-            "prioritized checklist the Swift team can follow next."
-        ),
-        agent=agent,
-        context=context_tasks,
+def create_tasks(
+    agents: dict,
+    intake_context: str = DEFAULT_INTAKE_CONTEXT,
+) -> list[Task]:
+    """Create the full sequential Fitness Coach review workflow."""
+    beginner_guidance_task = create_beginner_guidance_task(
+        agents["beginner_gym_coach"],
+        intake_context,
     )
-
-
-def create_tasks(agents: dict) -> list[Task]:
-    """Create the full sequential workflow."""
-    architecture_task = create_architecture_task(agents["swiftui"])
-    async_task = create_async_data_flow_task(
-        agents["concurrency"],
-        [architecture_task],
+    healthkit_task = create_healthkit_task(
+        agents["healthkit"],
+        [beginner_guidance_task],
     )
-    core_data_task = create_core_data_task(
-        agents["core_data"],
-        [architecture_task, async_task],
+    swiftui_task = create_swiftui_task(
+        agents["swiftui"],
+        [beginner_guidance_task, healthkit_task],
     )
-    test_task = create_unit_test_task(
-        agents["testing"],
-        [architecture_task, async_task, core_data_task],
-    )
-    review_task = create_final_review_task(
-        agents["reviewer"],
-        [architecture_task, async_task, core_data_task, test_task],
+    qa_task = create_qa_task(
+        agents["qa"],
+        [beginner_guidance_task, healthkit_task, swiftui_task],
     )
 
     return [
-        architecture_task,
-        async_task,
-        core_data_task,
-        test_task,
-        review_task,
+        beginner_guidance_task,
+        healthkit_task,
+        swiftui_task,
+        qa_task,
     ]

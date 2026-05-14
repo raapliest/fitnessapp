@@ -14,8 +14,15 @@ final class AppSettings: ObservableObject {
         }
     }
 
+    @Published var hasAcceptedMedicalDisclaimer: Bool {
+        didSet {
+            UserDefaults.standard.set(hasAcceptedMedicalDisclaimer, forKey: Self.medicalDisclaimerKey)
+        }
+    }
+
     private static let dailyCalorieGoalKey = "dailyCalorieGoal"
     private static let preferredFocusKey = "preferredWorkoutFocus"
+    private static let medicalDisclaimerKey = "hasAcceptedMedicalDisclaimer"
 
     init() {
         let storedGoal = UserDefaults.standard.double(forKey: Self.dailyCalorieGoalKey)
@@ -23,5 +30,7 @@ final class AppSettings: ObservableObject {
 
         let storedFocus = UserDefaults.standard.string(forKey: Self.preferredFocusKey)
         preferredFocus = storedFocus.flatMap(WorkoutFocus.init(rawValue:)) ?? .balanced
+
+        hasAcceptedMedicalDisclaimer = UserDefaults.standard.bool(forKey: Self.medicalDisclaimerKey)
     }
 }
