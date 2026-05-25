@@ -40,6 +40,10 @@
 		0B7D06352FAC320000791CC9 /* TrainerMovementScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06342FAC320000791CC9 /* TrainerMovementScore.swift */; };
 		0B7D06372FAC320000791CC9 /* TrainerMovementScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06362FAC320000791CC9 /* TrainerMovementScorer.swift */; };
 		0B7D06392FAC320000791CC9 /* MedicalDisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06382FAC320000791CC9 /* MedicalDisclaimerView.swift */; };
+		0B7D06412FAC330000791CC9 /* WorkoutHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06402FAC330000791CC9 /* WorkoutHistoryStore.swift */; };
+		0B7D06432FAC330000791CC9 /* CoachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06422FAC330000791CC9 /* CoachViewModel.swift */; };
+		0B7D06452FAC330000791CC9 /* HistoryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06442FAC330000791CC9 /* HistoryPage.swift */; };
+		0B7D06472FAC330000791CC9 /* WorkoutHistoryDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7D06462FAC330000791CC9 /* WorkoutHistoryDetailPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +82,10 @@
 		0B7D06342FAC320000791CC9 /* TrainerMovementScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/TrainerMovementScore.swift; sourceTree = "<group>"; };
 		0B7D06362FAC320000791CC9 /* TrainerMovementScorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Trainer/TrainerMovementScorer.swift; sourceTree = "<group>"; };
 		0B7D06382FAC320000791CC9 /* MedicalDisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/MedicalDisclaimerView.swift; sourceTree = "<group>"; };
+		0B7D06402FAC330000791CC9 /* WorkoutHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Recommendations/WorkoutHistoryStore.swift; sourceTree = "<group>"; };
+		0B7D06422FAC330000791CC9 /* CoachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/Coach/CoachViewModel.swift; sourceTree = "<group>"; };
+		0B7D06442FAC330000791CC9 /* HistoryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/History/HistoryPage.swift; sourceTree = "<group>"; };
+		0B7D06462FAC330000791CC9 /* WorkoutHistoryDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages/History/WorkoutHistoryDetailPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +130,7 @@
 				0B7D06302FAC310000791CC9 /* FitnessAppPersona.swift */,
 				0B7D06362FAC320000791CC9 /* TrainerMovementScorer.swift */,
 				0B7D06242FAC300000791CC9 /* RecommendationEngine.swift */,
+				0B7D06402FAC330000791CC9 /* WorkoutHistoryStore.swift */,
 				0B7D061A2FAC300000791CC9 /* HealthKitManager.swift */,
 				0B7D06182FAC300000791CC9 /* HealthAuthorizationStatus.swift */,
 				0B7D06122FAC300000791CC9 /* FormFeedback.swift */,
@@ -135,7 +144,10 @@
 				0B7D061C2FAC300000791CC9 /* InsightCard.swift */,
 				0B7D06382FAC320000791CC9 /* MedicalDisclaimerView.swift */,
 				0B7D06262FAC300000791CC9 /* CoachPage.swift */,
+				0B7D06422FAC330000791CC9 /* CoachViewModel.swift */,
 				0B7D062C2FAC300000791CC9 /* WorkoutRecommendationRow.swift */,
+				0B7D06442FAC330000791CC9 /* HistoryPage.swift */,
+				0B7D06462FAC330000791CC9 /* WorkoutHistoryDetailPage.swift */,
 				0B7D06102FAC300000791CC9 /* FormCoachPage.swift */,
 				0B7D06162FAC300000791CC9 /* FormFeedbackPanel.swift */,
 				0B7D06042FAC300000791CC9 /* LaunchPage.swift */,
@@ -237,10 +249,12 @@
 				0B7D062B2FAC300000791CC9 /* WorkoutRecommendation.swift in Sources */,
 				0B7D06072FAC300000791CC9 /* CalorieGoalCard.swift in Sources */,
 				0B7D06172FAC300000791CC9 /* FormFeedbackPanel.swift in Sources */,
+				0B7D06472FAC330000791CC9 /* WorkoutHistoryDetailPage.swift in Sources */,
 				0B7D06092FAC300000791CC9 /* CameraPreview.swift in Sources */,
 				0B7D06252FAC300000791CC9 /* RecommendationEngine.swift in Sources */,
 				0B7D05D32FAC22DF00791CC9 /* ContentView.swift in Sources */,
 				0B7D060B2FAC300000791CC9 /* CameraViewModel.swift in Sources */,
+				0B7D06432FAC330000791CC9 /* CoachViewModel.swift in Sources */,
 				0B7D06032FAC300000791CC9 /* AppSettings.swift in Sources */,
 				0B7D061F2FAC300000791CC9 /* PreviewView.swift in Sources */,
 				0B7D060D2FAC300000791CC9 /* FitnessTab.swift in Sources */,
@@ -250,6 +264,7 @@
 				0B7D06372FAC320000791CC9 /* TrainerMovementScorer.swift in Sources */,
 				0B7D06192FAC300000791CC9 /* HealthAuthorizationStatus.swift in Sources */,
 				0B7D06212FAC300000791CC9 /* ReadinessItem.swift in Sources */,
+				0B7D06412FAC330000791CC9 /* WorkoutHistoryStore.swift in Sources */,
 				0B7D05D12FAC22DF00791CC9 /* FitnessApp.swift in Sources */,
 				0B7D06112FAC300000791CC9 /* FormCoachPage.swift in Sources */,
 				0B7D06332FAC320000791CC9 /* TrainerMovement.swift in Sources */,
@@ -261,6 +276,7 @@
 				0B7D06312FAC310000791CC9 /* FitnessAppPersona.swift in Sources */,
 				0B7D06352FAC320000791CC9 /* TrainerMovementScore.swift in Sources */,
 				0B7D06052FAC300000791CC9 /* LaunchPage.swift in Sources */,
+				0B7D06452FAC330000791CC9 /* HistoryPage.swift in Sources */,
 				0B7D06232FAC300000791CC9 /* ReadinessRow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -3,31 +3,19 @@ import SwiftUI
 struct MainPage: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var healthKit: HealthKitManager
-    @State private var a2aResponse: A2ACalorieResponse?
-    @State private var a2aParseError: String?
+    @EnvironmentObject private var historyStore: WorkoutHistoryStore
 
-    private var calorieData: A2ACalorieResponse.CalorieData? {
-        a2aResponse?.calorieData
-    }
+    private let engine = RecommendationEngine()
 
-    private var displayedActiveEnergy: Double {
-        Double(calorieData?.activeCalories ?? Int(healthKit.activeEnergy))
-    }
-
-    private var displayedCalorieGoal: Double {
-        Double(calorieData?.goalCalories ?? Int(settings.dailyCalorieGoal))
-    }
-
-    private var displayedStatusMessage: String {
-        if let calorieData {
-            return "Parsed from \(calorieData.source)."
-        }
-
-        if let a2aParseError {
-            return a2aParseError
-        }
-
-        return healthKit.statusMessage
+    private var recommendation: WorkoutRecommendation {
+        engine.recommendation(
+            activeEnergy: healthKit.activeEnergy,
+            calorieGoal: settings.dailyCalorieGoal,
+            focus: settings.preferredFocus,
+            availableMinutes: settings.availableWorkoutMinutes,
+            intensity: settings.preferredIntensity,
+            isBeginner: settings.isBeginner
+        )
     }
 
     var body: some View {
@@ -35,20 +23,20 @@ struct MainPage: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ActiveEnergyCard(
-                        activeEnergy: displayedActiveEnergy,
-                        calorieGoal: displayedCalorieGoal,
-                        statusMessage: displayedStatusMessage,
-                        refresh: loadMockA2ACalorieResponse
+                        activeEnergy: healthKit.activeEnergy,
+                        calorieGoal: settings.dailyCalorieGoal,
+                        statusMessage: healthKit.statusMessage,
+                        refresh: refreshHealthData
                     )
+
+                    stepsCard
 
                     CalorieGoalCard(goal: $settings.dailyCalorieGoal)
 
-                    if let calorieData {
-                        calorieBreakdown(for: calorieData)
-                    }
+                    dashboardRecommendationCard
 
                     InsightCard(
-                        title: "Today’s coaching note",
+                        title: "Today’s plan",
                         message: coachingMessage,
                         systemImage: "sparkles"
                     )
@@ -59,81 +47,90 @@ struct MainPage: View {
             .navigationTitle("Fitness Coach")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: loadMockA2ACalorieResponse) {
-                        Label("Load A2A mock", systemImage: "arrow.triangle.2.circlepath")
+                    Button(action: refreshHealthData) {
+                        Label("Refresh Health", systemImage: "arrow.clockwise")
                     }
                 }
             }
             .task {
-                loadMockA2ACalorieResponse()
+                await healthKit.refreshTodayMetrics()
             }
         }
     }
 
-    private var coachingMessage: String {
-        if let insight = calorieData?.insight {
-            return insight
-        }
-
-        let remaining = max(settings.dailyCalorieGoal - healthKit.activeEnergy, 0)
-
-        if remaining == 0 {
-            return "Goal complete. Keep the rest of the day light and focus on recovery."
-        }
-
-        return "\(Int(remaining)) kcal left. Pick a workout that fits your energy and available time."
-    }
-
-    private func calorieBreakdown(for calorieData: A2ACalorieResponse.CalorieData) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Label(a2aResponse?.result.persona.name ?? "FitnessApp Persona", systemImage: "person.crop.circle.badge.checkmark")
+    private var stepsCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Steps", systemImage: "shoeprints.fill")
                 .font(.headline)
                 .foregroundStyle(.blue)
 
-            HStack {
-                calorieMetric("Consumed", value: calorieData.consumedCalories)
-                Spacer()
-                calorieMetric("Resting", value: calorieData.restingCalories)
-                Spacer()
-                calorieMetric("Remaining", value: calorieData.remainingCalories)
-            }
+            Text("\(Int(healthKit.stepCount))")
+                .font(.title2.bold())
 
-            Divider()
-
-            ForEach(calorieData.samples) { sample in
-                HStack {
-                    Text(sample.label)
-                    Spacer()
-                    Text("\(sample.calories) kcal")
-                        .foregroundStyle(.secondary)
-                }
+            Text("Supporting metric from Apple Health.")
                 .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var dashboardRecommendationCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Recommended workout", systemImage: recommendation.systemImage)
+                    .font(.headline)
+                    .foregroundStyle(.green)
+
+                Spacer()
+
+                Text("\(recommendation.durationMinutes) min")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
             }
+
+            Text(recommendation.title)
+                .font(.title3.bold())
+
+            Text(recommendation.subtitle)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Button {
+                quickStart()
+            } label: {
+                Label("Quick Start Workout", systemImage: "play.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
-    private func calorieMetric(_ title: String, value: Int) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+    private var coachingMessage: String {
+        let remaining = max(settings.dailyCalorieGoal - healthKit.activeEnergy, 0)
 
-            Text("\(value)")
-                .font(.title3.bold())
-                .contentTransition(.numericText())
+        if remaining == 0 {
+            return "Goal complete. Today's recommendation stays light to avoid overtraining."
+        }
+
+        return "\(Int(remaining)) kcal left. The plan adapts to \(settings.availableWorkoutMinutes) minutes, \(settings.preferredIntensity.title.lowercased()) intensity, and \(settings.preferredFocus.title.lowercased()) focus."
+    }
+
+    private func refreshHealthData() {
+        Task {
+            await healthKit.refreshTodayMetrics()
         }
     }
 
-    private func loadMockA2ACalorieResponse() {
-        do {
-            a2aResponse = try FitnessAppPersona.calorieResponse()
-            a2aParseError = nil
-        } catch {
-            a2aResponse = nil
-            a2aParseError = "Could not parse FitnessApp Persona A2A JSON."
+    private func quickStart() {
+        historyStore.save(recommendation)
+        Task {
+            await healthKit.saveWorkout(recommendation)
         }
     }
 }
@@ -143,5 +140,6 @@ struct MainPage_Previews: PreviewProvider {
         MainPage()
             .environmentObject(AppSettings())
             .environmentObject(HealthKitManager())
+            .environmentObject(WorkoutHistoryStore())
     }
 }

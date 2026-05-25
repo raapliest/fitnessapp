@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var settings = AppSettings()
     @StateObject private var healthKit = HealthKitManager()
+    @StateObject private var historyStore = WorkoutHistoryStore()
     @State private var selectedTab = FitnessTab.today
 
     var body: some View {
@@ -10,6 +11,7 @@ struct ContentView: View {
             MainPage()
                 .environmentObject(settings)
                 .environmentObject(healthKit)
+                .environmentObject(historyStore)
                 .tabItem {
                     Label("Today", systemImage: "flame")
                 }
@@ -18,10 +20,18 @@ struct ContentView: View {
             CoachPage()
                 .environmentObject(settings)
                 .environmentObject(healthKit)
+                .environmentObject(historyStore)
                 .tabItem {
                     Label("Coach", systemImage: "figure.strengthtraining.traditional")
                 }
                 .tag(FitnessTab.coach)
+
+            HistoryPage()
+                .environmentObject(historyStore)
+                .tabItem {
+                    Label("History", systemImage: "clock.arrow.circlepath")
+                }
+                .tag(FitnessTab.history)
 
             FormCoachPage()
                 .tabItem {

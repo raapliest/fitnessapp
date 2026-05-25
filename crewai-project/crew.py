@@ -1,54 +1,49 @@
-"""Run the Fitness Coach beginner gym helper workflow."""
+"""Run the Fitness Coach iOS engineering crew workflow."""
 
 import argparse
 import os
 from pathlib import Path
 
-DEFAULT_INTAKE_CONTEXT = """
-No custom intake was provided. Assume the user is a beginner who wants to go to
-the gym consistently, understand daily active calories, and receive simple,
-safe workout suggestions.
+DEFAULT_ENGINEERING_CONTEXT = """
+No custom engineering brief was provided. Assume the team is building a native
+iOS fitness tracker with SwiftUI, MVVM, HealthKit, Apple Health sync, workout
+tracking, step count, calories tracking, workout history, and QA coverage.
 """
 
-INTAKE_QUESTIONS = [
+ENGINEERING_BRIEF_QUESTIONS = [
     (
-        "User goal",
-        "What does the beginner user want most right now?",
-        "Build a consistent gym habit and know what workout to do today.",
+        "App goal",
+        "What is the main app feature the engineering crew should prioritize?",
+        "Build the MVP dashboard with step count, active calories, and workouts.",
     ),
     (
-        "Experience level",
-        "How experienced is the user with gym training?",
-        "New to the gym and unsure how to choose exercises.",
+        "Architecture",
+        "What architecture should the SwiftUI app follow?",
+        "MVVM with modular Services, Models, ViewModels, Views, and Tests.",
     ),
     (
-        "Training schedule",
-        "How many days per week can the user realistically train?",
-        "Three days per week.",
+        "Health data",
+        "Which HealthKit data should be implemented first?",
+        "Step count, active energy burned, and workout sessions.",
     ),
     (
-        "Available equipment",
-        "What equipment does the user have access to?",
-        "Basic gym machines, dumbbells, treadmill, and bike.",
+        "Screens",
+        "Which screens should the SwiftUI team design?",
+        "Dashboard, workout tracker, workout history, settings, and permissions.",
     ),
     (
-        "Confidence blocker",
-        "What makes the user feel stuck or intimidated?",
-        "They do not know whether they are doing enough or too much.",
+        "Testing",
+        "What testing workflow should QA emphasize?",
+        "ViewModel unit tests, HealthKit mocks, permission tests, and device QA.",
     ),
     (
-        "HealthKit signal",
-        "Which HealthKit signal should guide the app's advice first?",
-        "Active energy burned.",
-    ),
-    (
-        "Safety boundary",
-        "What should the app avoid recommending?",
-        "Avoid medical advice, extreme calorie targets, and pain-based coaching.",
+        "Constraints",
+        "What should agents avoid while generating deliverables?",
+        "Avoid chatbot consultation behavior and prioritize implementation output.",
     ),
     (
         "Open context",
-        "Add any extra context for the Beginner Gym Coach Agent.",
+        "Add any extra engineering context for the crew.",
         "No extra context.",
     ),
 ]
@@ -115,13 +110,13 @@ def resolve_llm():
 # Crew builder
 # ---------------------------------------------------------------------------
 
-def ask_product_intake() -> str:
-    """Ask lightweight product questions before the agents start reviewing."""
-    print("\n=== Beginner Gym Coach Intake ===")
-    print("Answer freely. The coach agent will give beginner gym guidance first.\n")
+def ask_engineering_brief() -> str:
+    """Ask lightweight engineering questions before the agents start building."""
+    print("\n=== Fitness Coach Engineering Brief ===")
+    print("Answer freely. The crew will turn this into app development deliverables.\n")
 
     answers: list[str] = []
-    for label, question, default in INTAKE_QUESTIONS:
+    for label, question, default in ENGINEERING_BRIEF_QUESTIONS:
         answer = input(f"{question}\n[{default}]\n> ").strip()
         answers.append(f"- {label}: {answer or default}")
         print()
@@ -132,18 +127,18 @@ def ask_product_intake() -> str:
 def parse_args() -> argparse.Namespace:
     """Parse CLI options for the crew runner."""
     parser = argparse.ArgumentParser(
-        description="Run the Fitness Coach beginner gym helper crew.",
+        description="Run the Fitness Coach iOS engineering crew.",
     )
     parser.add_argument(
         "--no-intake",
         action="store_true",
-        help="Skip interactive product questions and use default context.",
+        help="Skip interactive engineering questions and use default context.",
     )
     return parser.parse_args()
 
 
-def build_crew(intake_context: str):
-    """Build the Fitness Coach beginner helper crew with the resolved LLM."""
+def build_crew(engineering_context: str):
+    """Build the Fitness Coach iOS engineering crew with the resolved LLM."""
     validate_environment()
     configure_local_storage()
 
@@ -153,7 +148,7 @@ def build_crew(intake_context: str):
 
     llm    = resolve_llm()
     agents = create_agents(llm=llm)
-    tasks  = create_tasks(agents, intake_context=intake_context)
+    tasks  = create_tasks(agents, engineering_context=engineering_context)
 
     return Crew(
         agents=list(agents.values()),
@@ -170,11 +165,13 @@ def build_crew(intake_context: str):
 def main() -> None:
     """Kick off the workflow and print the final result."""
     args = parse_args()
-    intake_context = DEFAULT_INTAKE_CONTEXT if args.no_intake else ask_product_intake()
-    crew   = build_crew(intake_context)
+    engineering_context = (
+        DEFAULT_ENGINEERING_CONTEXT if args.no_intake else ask_engineering_brief()
+    )
+    crew   = build_crew(engineering_context)
     result = crew.kickoff()
 
-    print("\n\n=== Final Fitness Coach Beginner Helper Report ===\n")
+    print("\n\n=== Final Fitness Coach iOS Engineering Report ===\n")
     print(result)
 
 

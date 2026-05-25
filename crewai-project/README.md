@@ -1,21 +1,50 @@
-# CrewAI Beginner Gym Helper Team
+# CrewAI Fitness Coach Engineering Team
 
-This project runs a beginner gym helper crew for the Fitness Coach iOS app.
+This project simulates a three-agent AI software development team for building a
+native iOS fitness tracker app with SwiftUI, MVVM, HealthKit, Apple Health sync,
+workout tracking, step counting, calories tracking, workout history, and QA.
 
-Camera QA is intentionally skipped for now. The crew focuses on HealthKit,
-beginner-friendly SwiftUI guidance, and QA readiness.
+The crew is engineering-oriented. It is not a fitness consultation chatbot and
+does not produce long motivational coaching conversations.
+
+## Folder Structure
+
+```text
+crewai-project/
+├── agents.py
+├── tasks.py
+├── crew.py
+├── .gitignore
+├── requirements.txt
+├── README.md
+└── skills/
+    └── swiftui-pro/
+```
 
 ## Agents
 
-- Beginner Gym Coach Agent: asks beginner-focused training questions through
-  the terminal and turns free-form answers into simple, safe gym guidance.
-- HealthKit Agent: reviews HealthKit privacy, authorization, active-energy reads,
-  unavailable states, and whether the HealthKit signals support beginner advice.
-- SwiftUI Agent: reviews Today, Coach, Launch, onboarding/disclaimer, state
-  ownership, accessibility, layout risks, and whether the UI feels clear to a
-  new gym user.
-- QA Agent: creates terminal checks, simulator expectations, iPhone HealthKit
-  test steps, regression checks, and release blockers.
+- SwiftUIProAgent: senior iOS SwiftUI engineer for UI/UX, MVVM, navigation,
+  reusable components, state management, charts, dashboards, and production
+  Swift code.
+- HealthKitAgent: HealthKit specialist for Apple Health sync, authorization,
+  step count, active calories, workout sessions, read/write flows, sync logic,
+  real-device guidance, and permission error handling.
+- QAAgent: iOS QA lead for generated SwiftUI code, architecture issues,
+  HealthKit flow validation, edge cases, permission-denied testing, simulator
+  versus real-device checks, UI consistency, and bug reports.
+
+## Deliverables
+
+The workflow produces development artifacts such as:
+
+- SwiftUI views and reusable components.
+- ViewModels and MVVM architecture boundaries.
+- HealthKit manager/service design.
+- Modular folder structure.
+- Fitness data models and seed content.
+- Workout dashboard, tracking, and history plans.
+- Testing reports and QA workflows.
+- Production-ready Swift code sketches.
 
 ## Setup
 
@@ -38,12 +67,11 @@ beginner-friendly SwiftUI guidance, and QA readiness.
    pip install -r requirements.txt
    ```
 
-4. Set an LLM API key. Groq is used first if available; otherwise OpenAI is used.
+4. Set your LLM API key. Groq is used first when both keys are present:
 
    ```bash
-   export GROQ_API_KEY="your-groq-key"
-   # or
    export OPENAI_API_KEY="your-openai-key"
+   export GROQ_API_KEY="your-groq-key"
    ```
 
 5. Run the crew:
@@ -52,8 +80,7 @@ beginner-friendly SwiftUI guidance, and QA readiness.
    python crew.py
    ```
 
-   By default, the script asks a few product-intake questions before the agents
-   start. To skip the questions and use default context:
+   Or skip the interactive engineering brief:
 
    ```bash
    python crew.py --no-intake
@@ -61,14 +88,12 @@ beginner-friendly SwiftUI guidance, and QA readiness.
 
 ## Workflow
 
-The workflow runs sequentially:
+The crew runs sequentially:
 
-0. Beginner gym intake questions in terminal
-1. Beginner Gym Coach guidance
-2. HealthKit review
-3. SwiftUI review
-4. QA report
+1. HealthKitAgent designs Apple Health integration and HealthKit service code.
+2. SwiftUIProAgent designs the SwiftUI MVVM app architecture, screens, models,
+   and sample workout seed data.
+3. QAAgent validates architecture, HealthKit flows, UI consistency, and tests.
 
-The final terminal output is a beginner helper report with simple training
-guidance, HealthKit checks, SwiftUI issues, terminal commands, real-device
-iPhone steps, and release blockers.
+The final terminal output is an engineering report for building the Fitness
+Coach iOS app.

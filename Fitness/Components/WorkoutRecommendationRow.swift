@@ -22,6 +22,10 @@ struct WorkoutRecommendationRow: View {
                 Text("\(workout.durationMinutes) min • ~\(workout.estimatedCalories) kcal")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
+                Text("\(workout.intensity.title) intensity • goal \(workout.targetCalories) kcal")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 6)
@@ -36,7 +40,16 @@ struct WorkoutRecommendationRow_Previews: PreviewProvider {
                 subtitle: "Squats, push-ups, rows, and planks.",
                 durationMinutes: 24,
                 estimatedCalories: 190,
-                systemImage: "figure.highintensity.intervaltraining"
+                systemImage: "figure.highintensity.intervaltraining",
+                intensity: .medium,
+                targetCalories: 550,
+                activeEnergyAtGeneration: 240,
+                warmup: "5 min easy cardio.",
+                mainWork: [
+                    WorkoutBlock(name: "Circuit", detail: "Squat, push, row.", minutes: 14, sets: 3, reps: "8-12")
+                ],
+                cooldown: "5 min cooldown.",
+                safetyNotes: ["Warm-up and cooldown are included."]
             )
         )
     }
