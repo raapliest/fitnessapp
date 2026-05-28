@@ -1,9 +1,9 @@
 import Foundation
 
 enum FitnessTab: Hashable {
-    case today
+    case workout
     case coach
-    case history
-    case form
-    case launch
+    case camera
+    case profile
+    case settings
 }

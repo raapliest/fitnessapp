@@ -4,6 +4,7 @@ import Foundation
 
 final class CameraViewModel: NSObject, ObservableObject {
     @Published private(set) var feedback = FormFeedback.waiting
+    @Published private(set) var skeleton = PoseSkeleton.empty
     @Published private(set) var cameraStatus = "Camera is not running."
     @Published var selectedMovement: TrainerMovement = .squat {
         didSet {
@@ -42,6 +43,10 @@ final class CameraViewModel: NSObject, ObservableObject {
     func stop() {
         guard session.isRunning else {
             return
+        }
+
+        DispatchQueue.main.async {
+            self.skeleton = .empty
         }
 
         outputQueue.async { [session] in
@@ -111,7 +116,8 @@ extension CameraViewModel: AVCaptureVideoDataOutputSampleBufferDelegate {
         let result = analyzer.analyze(sampleBuffer: sampleBuffer)
 
         DispatchQueue.main.async {
-            self.feedback = result
+            self.feedback = result.feedback
+            self.skeleton = result.skeleton
         }
     }
 }

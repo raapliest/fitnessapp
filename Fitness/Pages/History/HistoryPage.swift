@@ -13,10 +13,10 @@ struct HistoryPage: View {
                             .foregroundStyle(.secondary)
                             .accessibilityHidden(true)
 
-                        Text("No Workouts Yet")
+                        Text("No Progress Yet")
                             .font(.headline)
 
-                        Text("Quick start a recommendation to save it here.")
+                        Text("Completed and saved workouts will appear here.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -38,7 +38,7 @@ struct HistoryPage: View {
                     }
                 }
             }
-            .navigationTitle("History")
+            .navigationTitle("Progress")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(role: .destructive) {

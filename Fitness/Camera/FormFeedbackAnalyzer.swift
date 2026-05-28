@@ -4,6 +4,65 @@ import CoreML
 import Foundation
 import Vision
 
+struct PoseSkeleton {
+    var joints: [PoseSkeletonJoint: CGPoint]
+
+    static let empty = PoseSkeleton(joints: [:])
+
+    var visibleJoints: [CGPoint] {
+        Array(joints.values)
+    }
+
+    var segments: [(CGPoint, CGPoint)] {
+        Self.connectedJoints.compactMap { start, end in
+            guard let startPoint = joints[start], let endPoint = joints[end] else {
+                return nil
+            }
+
+            return (startPoint, endPoint)
+        }
+    }
+
+    private static let connectedJoints: [(PoseSkeletonJoint, PoseSkeletonJoint)] = [
+        (.nose, .neck),
+        (.neck, .leftShoulder),
+        (.neck, .rightShoulder),
+        (.leftShoulder, .leftElbow),
+        (.leftElbow, .leftWrist),
+        (.rightShoulder, .rightElbow),
+        (.rightElbow, .rightWrist),
+        (.leftShoulder, .leftHip),
+        (.rightShoulder, .rightHip),
+        (.leftHip, .rightHip),
+        (.leftHip, .leftKnee),
+        (.leftKnee, .leftAnkle),
+        (.rightHip, .rightKnee),
+        (.rightKnee, .rightAnkle)
+    ]
+}
+
+enum PoseSkeletonJoint: String, Hashable {
+    case nose
+    case neck
+    case leftShoulder
+    case rightShoulder
+    case leftElbow
+    case rightElbow
+    case leftWrist
+    case rightWrist
+    case leftHip
+    case rightHip
+    case leftKnee
+    case rightKnee
+    case leftAnkle
+    case rightAnkle
+}
+
+struct FormAnalysisResult {
+    let feedback: FormFeedback
+    let skeleton: PoseSkeleton
+}
+
 final class FormFeedbackAnalyzer {
     private let bodyPoseRequest = VNDetectHumanBodyPoseRequest()
     private let trainerScorer: TrainerMovementScoring
@@ -25,9 +84,9 @@ final class FormFeedbackAnalyzer {
         wasInRepBottom = false
     }
 
-    func analyze(sampleBuffer: CMSampleBuffer) -> FormFeedback {
+    func analyze(sampleBuffer: CMSampleBuffer) -> FormAnalysisResult {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return .waiting
+            return FormAnalysisResult(feedback: .waiting, skeleton: .empty)
         }
 
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up)
@@ -35,20 +94,58 @@ final class FormFeedbackAnalyzer {
         do {
             try handler.perform([bodyPoseRequest])
             guard let observation = bodyPoseRequest.results?.first else {
-                return .waiting
+                return FormAnalysisResult(feedback: .waiting, skeleton: .empty)
             }
 
             let points = try observation.recognizedPoints(.all)
-            return feedback(from: points)
+            return FormAnalysisResult(
+                feedback: feedback(from: points),
+                skeleton: skeleton(from: points)
+            )
         } catch {
-            return FormFeedback(
-                headline: "Pose unavailable",
-                detail: "Vision could not read this frame. Improve lighting and keep moving slowly.",
-                confidence: 0,
-                isReadyForModelUpgrade: false,
-                trainerScore: .waiting
+            return FormAnalysisResult(
+                feedback: FormFeedback(
+                    headline: "Pose unavailable",
+                    detail: "Vision could not read this frame. Improve lighting and keep moving slowly.",
+                    confidence: 0,
+                    isReadyForModelUpgrade: false,
+                    trainerScore: .waiting
+                ),
+                skeleton: .empty
             )
         }
+    }
+
+    private func skeleton(from points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]) -> PoseSkeleton {
+        let mappedJoints: [(PoseSkeletonJoint, VNHumanBodyPoseObservation.JointName)] = [
+            (.nose, .nose),
+            (.neck, .neck),
+            (.leftShoulder, .leftShoulder),
+            (.rightShoulder, .rightShoulder),
+            (.leftElbow, .leftElbow),
+            (.rightElbow, .rightElbow),
+            (.leftWrist, .leftWrist),
+            (.rightWrist, .rightWrist),
+            (.leftHip, .leftHip),
+            (.rightHip, .rightHip),
+            (.leftKnee, .leftKnee),
+            (.rightKnee, .rightKnee),
+            (.leftAnkle, .leftAnkle),
+            (.rightAnkle, .rightAnkle)
+        ]
+
+        let joints = mappedJoints.reduce(into: [PoseSkeletonJoint: CGPoint]()) { result, pair in
+            guard let recognizedPoint = point(pair.1, in: points) else {
+                return
+            }
+
+            result[pair.0] = CGPoint(
+                x: 1 - recognizedPoint.location.x,
+                y: 1 - recognizedPoint.location.y
+            )
+        }
+
+        return PoseSkeleton(joints: joints)
     }
 
     private func feedback(from points: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]) -> FormFeedback {

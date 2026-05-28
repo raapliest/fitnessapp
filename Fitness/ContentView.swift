@@ -4,46 +4,62 @@ struct ContentView: View {
     @StateObject private var settings = AppSettings()
     @StateObject private var healthKit = HealthKitManager()
     @StateObject private var historyStore = WorkoutHistoryStore()
-    @State private var selectedTab = FitnessTab.today
+    @StateObject private var workoutStore = DailyWorkoutStore()
+    @StateObject private var chatStore = CoachChatStore()
+    @StateObject private var profileStore = ProfileStore()
+    @StateObject private var routineStore = RoutineStore()
+    @StateObject private var customExerciseStore = CustomExerciseStore()
+    @State private var selectedTab = FitnessTab.workout
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            MainPage()
+            WorkoutPage()
                 .environmentObject(settings)
                 .environmentObject(healthKit)
                 .environmentObject(historyStore)
+                .environmentObject(workoutStore)
+                .environmentObject(routineStore)
+                .environmentObject(customExerciseStore)
                 .tabItem {
-                    Label("Today", systemImage: "flame")
+                    Label("Workout", systemImage: "checklist")
                 }
-                .tag(FitnessTab.today)
+                .tag(FitnessTab.workout)
 
             CoachPage()
                 .environmentObject(settings)
                 .environmentObject(healthKit)
                 .environmentObject(historyStore)
+                .environmentObject(workoutStore)
+                .environmentObject(chatStore)
+                .environmentObject(profileStore)
                 .tabItem {
-                    Label("Coach", systemImage: "figure.strengthtraining.traditional")
+                    Label("Coach", systemImage: "message.fill")
                 }
                 .tag(FitnessTab.coach)
 
-            HistoryPage()
-                .environmentObject(historyStore)
-                .tabItem {
-                    Label("History", systemImage: "clock.arrow.circlepath")
-                }
-                .tag(FitnessTab.history)
-
             FormCoachPage()
                 .tabItem {
-                    Label("Form", systemImage: "camera.viewfinder")
+                    Label("Camera", systemImage: "camera.viewfinder")
                 }
-                .tag(FitnessTab.form)
+                .tag(FitnessTab.camera)
 
-            LaunchPage()
+            ProfilePage()
+                .environmentObject(profileStore)
                 .tabItem {
-                    Label("Launch", systemImage: "checkmark.seal")
+                    Label("Profile", systemImage: "person.crop.circle")
                 }
-                .tag(FitnessTab.launch)
+                .tag(FitnessTab.profile)
+
+            SettingsPage()
+                .environmentObject(settings)
+                .environmentObject(healthKit)
+                .environmentObject(historyStore)
+                .environmentObject(chatStore)
+                .environmentObject(workoutStore)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(FitnessTab.settings)
         }
         .task {
             await healthKit.requestAuthorization()

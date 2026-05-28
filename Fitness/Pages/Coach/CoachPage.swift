@@ -4,7 +4,11 @@ struct CoachPage: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var healthKit: HealthKitManager
     @EnvironmentObject private var historyStore: WorkoutHistoryStore
+    @EnvironmentObject private var workoutStore: DailyWorkoutStore
+    @EnvironmentObject private var chatStore: CoachChatStore
+    @EnvironmentObject private var profileStore: ProfileStore
     @StateObject private var viewModel: CoachViewModel
+    @State private var messageText = ""
 
     init(historyStore: WorkoutHistoryStore? = nil) {
         _viewModel = StateObject(
@@ -16,58 +20,28 @@ struct CoachPage: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section("Plan inputs") {
-                    Picker("Time", selection: $settings.availableWorkoutMinutes) {
-                        Text("15").tag(15)
-                        Text("30").tag(30)
-                        Text("60").tag(60)
-                    }
-                    .pickerStyle(.segmented)
-
-                    Picker("Intensity", selection: $settings.preferredIntensity) {
-                        ForEach(WorkoutIntensity.allCases) { intensity in
-                            Text(intensity.title).tag(intensity)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    Picker("Training focus", selection: $settings.preferredFocus) {
-                        ForEach(WorkoutFocus.allCases) { focus in
-                            Text(focus.title).tag(focus)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    Toggle("Beginner safety mode", isOn: $settings.isBeginner)
-                }
-
-                Section("Recommended workout") {
-                    WorkoutRecommendationRow(workout: viewModel.currentRecommendation)
-
-                    recommendationDetail(viewModel.currentRecommendation)
-
+            VStack(spacing: 0) {
+                messagesView
+                composer
+            }
+            .navigationTitle("Coach")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        saveRecommendation()
+                        workoutStore.applyRecommendation(viewModel.currentRecommendation)
                     } label: {
-                        Label("Quick Start Workout", systemImage: "play.circle.fill")
-                    }
-                    .buttonStyle(.borderedProminent)
-
-                    if let message = viewModel.lastSavedMessage {
-                        Text(message)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        Label("Apply Recommendation", systemImage: "wand.and.stars")
                     }
                 }
 
-                Section("Safety checks") {
-                    ForEach(viewModel.currentRecommendation.safetyNotes, id: \.self) { note in
-                        Label(note, systemImage: "checkmark.shield")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(role: .destructive) {
+                        chatStore.clear()
+                    } label: {
+                        Label("Clear Chat", systemImage: "trash")
                     }
                 }
             }
-            .navigationTitle("Coach")
             .task {
                 refreshRecommendation()
             }
@@ -80,47 +54,84 @@ struct CoachPage: View {
         }
     }
 
-    private func recommendationDetail(_ recommendation: WorkoutRecommendation) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Warm-up")
-                .font(.headline)
-            Text(recommendation.warmup)
+    private var messagesView: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    recommendationStrip
 
-            Text("Main work")
-                .font(.headline)
-            ForEach(recommendation.mainWork) { block in
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(block.name)
-                        .font(.subheadline.bold())
-                    Text(block.detail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(blockMeta(block))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    ForEach(chatStore.messages) { message in
+                        ChatBubble(message: message)
+                            .id(message.id)
+                    }
+
+                    if viewModel.isSendingCoachQuestion {
+                        HStack {
+                            ProgressView()
+                            Text("Coach is thinking")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .padding(.vertical)
+            }
+            .background(Color(.systemGroupedBackground))
+            .onChange(of: chatStore.messages.count) { _ in
+                guard let last = chatStore.messages.last else { return }
+                withAnimation {
+                    proxy.scrollTo(last.id, anchor: .bottom)
                 }
             }
-
-            Text("Cooldown")
-                .font(.headline)
-            Text(recommendation.cooldown)
         }
-        .font(.subheadline)
-        .padding(.vertical, 4)
     }
 
-    private func blockMeta(_ block: WorkoutBlock) -> String {
-        var parts = ["\(block.minutes) min"]
+    private var recommendationStrip: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Context", systemImage: viewModel.currentRecommendation.systemImage)
+                .font(.caption.bold())
+                .foregroundStyle(.green)
 
-        if let sets = block.sets {
-            parts.append("\(sets) sets")
+            Text(viewModel.currentRecommendation.title)
+                .font(.headline)
+
+            Text("\(workoutStore.workout.exercises.count) exercises in today's workout • \(workoutStore.workout.completedCount) done")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal)
+    }
 
-        if let reps = block.reps {
-            parts.append(reps)
+    private var composer: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            TextField("Message your coach", text: $messageText, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(1...5)
+                .submitLabel(.send)
+                .disabled(viewModel.isSendingCoachQuestion)
+                .onSubmit(sendMessage)
+
+            Button {
+                sendMessage()
+            } label: {
+                Image(systemName: "paperplane.fill")
+                    .frame(width: 22, height: 22)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(
+                viewModel.isSendingCoachQuestion ||
+                messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            )
+            .accessibilityLabel("Send message")
         }
-
-        return parts.joined(separator: " • ")
+        .padding()
+        .background(Color(.systemBackground))
     }
 
     private func refreshRecommendation() {
@@ -134,11 +145,45 @@ struct CoachPage: View {
         )
     }
 
-    private func saveRecommendation() {
-        historyStore.save(viewModel.currentRecommendation)
+    private func sendMessage() {
+        let question = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !question.isEmpty else { return }
+
+        messageText = ""
         Task {
-            await healthKit.saveWorkout(viewModel.currentRecommendation)
+            await viewModel.askCoach(
+                question: question,
+                isBeginner: settings.isBeginner,
+                dailyWorkout: workoutStore.workout,
+                profile: profileStore.profile,
+                chatStore: chatStore
+            )
         }
+    }
+}
+
+private struct ChatBubble: View {
+    let message: CoachChatMessage
+
+    private var isUser: Bool {
+        message.role == .user
+    }
+
+    var body: some View {
+        HStack {
+            if isUser { Spacer(minLength: 48) }
+
+            Text(message.text)
+                .font(.body)
+                .padding(12)
+                .foregroundStyle(isUser ? .white : .primary)
+                .background(isUser ? Color.accentColor : Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityLabel(isUser ? "Your message" : "Coach message")
+
+            if !isUser { Spacer(minLength: 48) }
+        }
+        .padding(.horizontal)
     }
 }
 
@@ -148,5 +193,8 @@ struct CoachPage_Previews: PreviewProvider {
             .environmentObject(AppSettings())
             .environmentObject(HealthKitManager())
             .environmentObject(WorkoutHistoryStore())
+            .environmentObject(DailyWorkoutStore())
+            .environmentObject(CoachChatStore())
+            .environmentObject(ProfileStore())
     }
 }
