@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsPage: View {
+    @EnvironmentObject private var auth: AuthSessionStore
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var healthKit: HealthKitManager
     @EnvironmentObject private var historyStore: WorkoutHistoryStore
@@ -24,10 +25,10 @@ struct SettingsPage: View {
                     )
                     .foregroundStyle(hasGroqKey ? .green : .orange)
 
-                    Button(role: .destructive) {
-                        chatStore.clear()
+                    Button {
+                        chatStore.newSession()
                     } label: {
-                        Label("Clear Coach Chat", systemImage: "trash")
+                        Label("New Chat", systemImage: "plus.bubble")
                     }
                 }
 
@@ -60,6 +61,14 @@ struct SettingsPage: View {
                         Label("Refresh Health Permissions", systemImage: "heart.text.square")
                     }
                 }
+
+                Section("Account") {
+                    Button(role: .destructive) {
+                        Task { await auth.signOut() }
+                    } label: {
+                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                    }
+                }
             }
             .navigationTitle("Settings")
         }
@@ -69,6 +78,7 @@ struct SettingsPage: View {
 struct SettingsPage_Previews: PreviewProvider {
     static var previews: some View {
         SettingsPage()
+            .environmentObject(AuthSessionStore())
             .environmentObject(AppSettings())
             .environmentObject(HealthKitManager())
             .environmentObject(WorkoutHistoryStore())

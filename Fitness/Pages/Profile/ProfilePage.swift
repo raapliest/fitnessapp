@@ -2,20 +2,34 @@ import SwiftUI
 
 struct ProfilePage: View {
     @EnvironmentObject private var profileStore: ProfileStore
+    @EnvironmentObject private var auth: AuthSessionStore
+
+    @State private var showSignOutConfirm = false
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Account") {
-                    if profileStore.isLoggedIn {
-                        Label("Signed in locally", systemImage: "person.crop.circle.fill.badge.checkmark")
-                            .foregroundStyle(.green)
-                    } else {
-                        Label("Local profile", systemImage: "person.crop.circle")
-                            .foregroundStyle(.secondary)
+                    HStack {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.blue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(profileStore.profile.displayName.isEmpty ? "Fitness User" : profileStore.profile.displayName)
+                                .font(.headline)
+                            Text(auth.session.email)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if !auth.session.provider.isEmpty {
+                                Text("via \(auth.session.provider)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
                     }
+                    .padding(.vertical, 4)
 
-                    TextField("Name", text: $profileStore.profile.displayName)
+                    TextField("Display name", text: $profileStore.profile.displayName)
                         .textContentType(.name)
                 }
 
@@ -26,7 +40,6 @@ struct ProfilePage: View {
                         Text("Intermediate").tag("Intermediate")
                         Text("Advanced").tag("Advanced")
                     }
-
                     TextField("Equipment", text: $profileStore.profile.equipment)
                     TextField("Limitations or injuries", text: $profileStore.profile.limitations, axis: .vertical)
                         .lineLimit(2...5)
@@ -34,13 +47,19 @@ struct ProfilePage: View {
 
                 Section {
                     Button(role: .destructive) {
-                        profileStore.signOut()
+                        showSignOutConfirm = true
                     } label: {
-                        Label("Reset Profile", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
             }
             .navigationTitle("Profile")
+            .confirmationDialog("Sign out from this account?", isPresented: $showSignOutConfirm, titleVisibility: .visible) {
+                Button("Sign Out", role: .destructive) {
+                    Task { await auth.signOut() }
+                }
+                Button("Cancel", role: .cancel) {}
+            }
         }
     }
 }
@@ -49,5 +68,6 @@ struct ProfilePage_Previews: PreviewProvider {
     static var previews: some View {
         ProfilePage()
             .environmentObject(ProfileStore())
+            .environmentObject(AuthSessionStore())
     }
 }

@@ -9,6 +9,7 @@ struct CoachPage: View {
     @EnvironmentObject private var profileStore: ProfileStore
     @StateObject private var viewModel: CoachViewModel
     @State private var messageText = ""
+    @State private var showHistory = false
 
     init(historyStore: WorkoutHistoryStore? = nil) {
         _viewModel = StateObject(
@@ -24,23 +25,28 @@ struct CoachPage: View {
                 messagesView
                 composer
             }
-            .navigationTitle("Coach")
+            .navigationTitle(chatStore.activeSession?.title ?? "Coach")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        workoutStore.applyRecommendation(viewModel.currentRecommendation)
+                        showHistory = true
                     } label: {
-                        Label("Apply Recommendation", systemImage: "wand.and.stars")
+                        Label("Riwayat", systemImage: "clock.arrow.circlepath")
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(role: .destructive) {
-                        chatStore.clear()
+                    Button {
+                        chatStore.newSession()
                     } label: {
-                        Label("Clear Chat", systemImage: "trash")
+                        Label("New Chat", systemImage: "square.and.pencil")
                     }
                 }
+            }
+            .sheet(isPresented: $showHistory) {
+                ChatHistoryPage()
+                    .environmentObject(chatStore)
             }
             .task {
                 refreshRecommendation()

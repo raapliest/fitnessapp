@@ -6,15 +6,12 @@ final class CustomExerciseStore: ObservableObject {
         didSet { persist() }
     }
 
-    private let storageKey = "customExerciseLibraryItems"
+    var userID: String = "guest"
+    private let firestore = FirestoreService.shared
 
     init() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode([ExerciseLibraryItem].self, from: data) {
-            items = decoded
-        } else {
-            items = []
-        }
+        items = []
+        loadLocal()
     }
 
     func add(_ item: ExerciseLibraryItem) {
@@ -30,8 +27,39 @@ final class CustomExerciseStore: ObservableObject {
         items.removeAll { $0.id == item.id }
     }
 
+    func setUserID(_ userID: String) {
+        self.userID = userID.isEmpty ? "guest" : userID
+        loadLocal()
+        Task { await fetchFromFirestore() }
+    }
+
+    func load() { loadLocal() }
+
+    // MARK: - Private
+
     private func persist() {
         guard let data = try? JSONEncoder().encode(items) else { return }
-        UserDefaults.standard.set(data, forKey: storageKey)
+        UserDefaults.standard.set(data, forKey: localKey)
+        firestore.save(items, userID: userID, store: "customExercises")
     }
+
+    private func loadLocal() {
+        if let data = UserDefaults.standard.data(forKey: localKey),
+           let decoded = try? JSONDecoder().decode([ExerciseLibraryItem].self, from: data) {
+            items = decoded
+        } else {
+            items = []
+        }
+    }
+
+    private func fetchFromFirestore() async {
+        guard let remote = await firestore.load([ExerciseLibraryItem].self, userID: userID, store: "customExercises") else { return }
+        items = remote
+        if let data = try? JSONEncoder().encode(remote) {
+            UserDefaults.standard.set(data, forKey: localKey)
+        }
+    }
+
+    var storageKey: String { localKey }
+    private var localKey: String { "customExerciseLibraryItems.\(userID)" }
 }

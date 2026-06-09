@@ -4,14 +4,15 @@ import Foundation
 final class WorkoutHistoryStore: ObservableObject {
     @Published private(set) var recommendations: [WorkoutRecommendation] = []
 
-    private let storageKey = "workoutRecommendationHistory"
+    private var userID: String = "guest"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let firestore = FirestoreService.shared
 
     init() {
         encoder.dateEncodingStrategy = .iso8601
         decoder.dateDecodingStrategy = .iso8601
-        load()
+        loadLocal()
     }
 
     func save(_ recommendation: WorkoutRecommendation) {
@@ -23,28 +24,41 @@ final class WorkoutHistoryStore: ObservableObject {
 
     func clear() {
         recommendations = []
-        UserDefaults.standard.removeObject(forKey: storageKey)
+        UserDefaults.standard.removeObject(forKey: localKey)
+        firestore.save([WorkoutRecommendation](), userID: userID, store: "workoutHistory")
     }
 
-    private func load() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey) else {
+    func setUserID(_ userID: String) {
+        self.userID = userID.isEmpty ? "guest" : userID
+        loadLocal()
+        Task { await fetchFromFirestore() }
+    }
+
+    // MARK: - Private
+
+    private func persist() {
+        if let data = try? encoder.encode(recommendations) {
+            UserDefaults.standard.set(data, forKey: localKey)
+        }
+        firestore.save(recommendations, userID: userID, store: "workoutHistory")
+    }
+
+    private func loadLocal() {
+        guard let data = UserDefaults.standard.data(forKey: localKey),
+              let decoded = try? decoder.decode([WorkoutRecommendation].self, from: data) else {
             recommendations = []
             return
         }
+        recommendations = decoded
+    }
 
-        do {
-            recommendations = try decoder.decode([WorkoutRecommendation].self, from: data)
-        } catch {
-            recommendations = []
+    private func fetchFromFirestore() async {
+        guard let remote = await firestore.load([WorkoutRecommendation].self, userID: userID, store: "workoutHistory") else { return }
+        recommendations = remote
+        if let data = try? encoder.encode(remote) {
+            UserDefaults.standard.set(data, forKey: localKey)
         }
     }
 
-    private func persist() {
-        do {
-            let data = try encoder.encode(recommendations)
-            UserDefaults.standard.set(data, forKey: storageKey)
-        } catch {
-            UserDefaults.standard.removeObject(forKey: storageKey)
-        }
-    }
+    private var localKey: String { "workoutRecommendationHistory.\(userID)" }
 }

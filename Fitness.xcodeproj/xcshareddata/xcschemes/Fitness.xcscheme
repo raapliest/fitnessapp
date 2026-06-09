@@ -49,6 +49,13 @@
             ReferencedContainer = "container:Fitness.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "GROQ_API_KEY"
+            value = "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"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

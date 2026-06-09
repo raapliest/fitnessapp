@@ -4,41 +4,94 @@ struct FormCoachPage: View {
     @StateObject private var camera = CameraViewModel()
 
     var body: some View {
-        NavigationStack {
-            GeometryReader { proxy in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        Picker("Movement", selection: $camera.selectedMovement) {
-                            ForEach(TrainerMovement.allCases) { movement in
-                                Text(movement.title).tag(movement)
-                            }
-                        }
-                        .pickerStyle(.segmented)
+        ZStack {
+            // Full screen camera
+            CameraPreview(session: camera.session)
+                .ignoresSafeArea()
 
-                        ZStack {
-                            CameraPreview(session: camera.session)
-                            PoseSkeletonOverlay(skeleton: camera.skeleton)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: min(proxy.size.height * 0.48, 420))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+            // Skeleton overlay
+            PoseSkeletonOverlay(skeleton: camera.skeleton)
+                .ignoresSafeArea()
 
-                        FormFeedbackPanel(feedback: camera.feedback, cameraStatus: camera.cameraStatus)
+            // Top overlay: movement picker + camera button
+            VStack {
+                HStack {
+                    Picker("Movement", selection: $camera.selectedMovement) {
+                        ForEach(TrainerMovement.allCases) { movement in
+                            Text(movement.title).tag(movement)
+                        }
                     }
-                    .padding()
-                }
-            }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Form Feedback")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                    .pickerStyle(.segmented)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+
                     Button(action: camera.start) {
-                        Label("Start Camera", systemImage: "play.fill")
+                        Image(systemName: "play.fill")
+                            .padding(10)
+                            .background(.ultraThinMaterial, in: Circle())
+                            .foregroundStyle(.white)
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
+
+                Spacer()
+
+                // Bottom overlay: metrics panel
+                CompactFeedbackOverlay(feedback: camera.feedback, cameraStatus: camera.cameraStatus)
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
             }
-            .onDisappear(perform: camera.stop)
         }
+        .onDisappear(perform: camera.stop)
+    }
+}
+
+private struct CompactFeedbackOverlay: View {
+    let feedback: FormFeedback
+    let cameraStatus: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            // Headline + confidence
+            HStack {
+                Label(feedback.headline, systemImage: feedback.isReadyForModelUpgrade ? "checkmark.circle.fill" : "viewfinder")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(feedback.isReadyForModelUpgrade ? .green : .orange)
+                Spacer()
+                Text(cameraStatus)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            ProgressView(value: feedback.confidence)
+                .tint(feedback.isReadyForModelUpgrade ? .green : .orange)
+
+            // Metrics row
+            HStack(spacing: 0) {
+                metricItem("Reps", value: "\(feedback.trainerScore.repCount)")
+                Divider().frame(height: 32)
+                metricItem("Form", value: "\(Int(feedback.trainerScore.score * 100))%")
+                Divider().frame(height: 32)
+                metricItem("Stability", value: "\(Int(feedback.trainerScore.stabilityScore * 100))%")
+                Divider().frame(height: 32)
+                metricItem("Depth", value: "\(Int(feedback.trainerScore.depthScore * 100))%")
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(12)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func metricItem(_ title: String, value: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.title3.bold())
+                .foregroundStyle(.primary)
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
